@@ -72,7 +72,9 @@ SnakeGameLogic.prototype.nextState = function() {
 // 먹이좌표
   if (this.joints[0].x === this.fruit.x && this.joints[0].y === this.fruit.y) {
     console.log("먹엇다");
+    // FIXME: 먹이를 먹은 순간 머리 부분에 두 개의 마디가 존재하게 됩니다. `console.log(this.joints)`를 통해 관찰해보세요.
     this.joints.push({ x: this.fruit.x, y: this.fruit.y });
+    // FIXME: `Math.floor(Math.random() * COLS)`로 고칠 수 있습니다.
     this.fruit.x = Math.ceil(Math.random() * COLS - 1);
     this.fruit.y = Math.ceil(Math.random() * ROWS - 1);
   }
