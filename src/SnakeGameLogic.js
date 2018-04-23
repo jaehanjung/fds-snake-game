@@ -6,9 +6,18 @@ function SnakeGameLogic() {
   this.joints = [{ x: 2, y: 0 }, { x: 1, y: 0 }, { x: 0, y: 0 }];
 
   // 먹이의 좌표
-  this.fruit = { x: 5, y: 5 };
+  this.fruit = this.loop();
 
   this.direction = "right";
+}
+// 먹이좌표가 몸통에서 안생기게 하는 함수
+ SnakeGameLogic.prototype.loop = function() {
+  let randomNumber = {x: null, y: null };
+  do {
+    randomNumber.x = Math.ceil(Math.random() * COLS - 1);
+    randomNumber.y = Math.ceil(Math.random() * ROWS - 1);
+  } while (this.joints.some(data => data.x === randomNumber.x || data.y === randomNumber.y));
+  return randomNumber;
 }
 
 SnakeGameLogic.prototype.up = function() {
@@ -52,32 +61,42 @@ SnakeGameLogic.prototype.nextState = function() {
   // 컨트롤
   if (this.direction === "up") {
     this.joints.unshift({ x: this.joints[0].x, y: this.joints[0].y - 1 });
-    this.joints.pop();
+    // this.joints.pop();
   }
   if (this.direction === "down") {
     this.joints.unshift({ x: this.joints[0].x, y: this.joints[0].y + 1 });
-    this.joints.pop();
+    // this.joints.pop();
   }
   if (this.direction === "left") {
     this.joints.unshift({ x: this.joints[0].x - 1, y: this.joints[0].y });
-    this.joints.pop();
+    // this.joints.pop();
   }
   if (this.direction === "right") {
     this.joints.unshift({ x: this.joints[0].x + 1, y: this.joints[0].y });
+    // this.joints.pop();
+  }
+  // 몸통에 부딛히면 죽는다.
+  let newjoin = this.joints.slice(1);
+  console.log(newjoin);
+  if (
+    newjoin.some(
+      item => item.x === this.joints[0].x && item.y === this.joints[0].y
+    )
+  ) {
+    return false;
+  }
+
+  // 먹이좌표
+  if (this.joints[0].x === this.fruit.x && this.joints[0].y === this.fruit.y) {
+    console.log("먹엇다");
+    // this.joints.push({ x: this.fruit.x, y: this.fruit.y });
+    this.fruit = this.loop();
+  } else {
     this.joints.pop();
   }
 
 
-
-// 먹이좌표
-  if (this.joints[0].x === this.fruit.x && this.joints[0].y === this.fruit.y) {
-    console.log("먹엇다");
-    this.joints.push({ x: this.fruit.x, y: this.fruit.y });
-    this.fruit.x = Math.ceil(Math.random() * COLS - 1);
-    this.fruit.y = Math.ceil(Math.random() * ROWS - 1);
-  }
-
-// 벽에 부딛히면 게임끝
+  // 벽에 부딛히면 게임끝
   if (
     this.joints[0].x >= COLS ||
     this.joints[0].y >= ROWS ||
@@ -109,3 +128,5 @@ export default SnakeGameLogic;
 //     return joints
 //   }
 // }
+
+// 과일랜덤하게 생성헀으면 뱀에 몸통에 랜덤하게생성된 과일에 위치하고 같은 객체가 있으면 랜덤을 다시돌려줘라.
